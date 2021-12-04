@@ -73,7 +73,7 @@ def conv2d(image):
     kernel = np.array([[1,2,1], [0,0,0], [-1,-2,-1]])
     size = 3
     size = st.sidebar.slider('size of kernel', 2, 15, 3)
-    coeffecient = st.sidebar.number_input('Enter coeffecient', step=0.01)
+    coeffecient = st.sidebar.number_input('Enter coeffecient',value=1.0, step=0.01)
 
     k = np.zeros((size,size),dtype=np.int32)
     for i in range(size):
