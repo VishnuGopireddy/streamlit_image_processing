@@ -2,41 +2,45 @@ import cv2
 import numpy as np
 from PIL import Image
 import streamlit as st
-
-DEFAULT_IMG = 'fruits.jpg'
-
-def gray_scale(img):
-    '''
-    :param img: numpy array of RGB image
-    :return: numpy array if gray scale image
-    '''
-    if img.shape[-1] == 3:
-        gray_img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-        return gray_img
-
-    if img.shape[-1] == 1:
-        return img
+import img_processing_algos as ip_alogs
 
 
-def threshold(img):
-    '''
-    :param img: grey sclae image as numpy array
-    :param threshold: int threshold value
-    :return: Binary gray scale image
-    '''
-    gray = gray_scale(img)
-    threshold = st.slider('Thresold values',0,255,127,1)
-    ret, binary = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY)
-    return binary
-
+DEFAULT_IMG = 'cube.png'
 # img = Image.open(DEFAULT_IMG)
+img_file = st.file_uploader("Add a file", type=['.jpg', '.jpeg', '.png'])
+if img_file != None:
+    img = Image.open(img_file)
+    img = img.convert('RGB')
+    img = np.array(img)
+else:
+    img = Image.open(DEFAULT_IMG)
+    img = img.convert('RGB')
+    img = np.array(img)
 
-def run():
-    img_file = st.file_uploader("Add a file", type=['.jpg', '.jpeg', '.png'])
-    if img_file != None:
-        img = np.array(Image.open(img_file))
-    else:
-        img = np.array(Image.open(DEFAULT_IMG))
+target = img.copy()
 
-    print(img.shape)
-    st.image([img, gray_scale(img), threshold(img)],width=100)
+algorithms = ['grayscale', 'grayscale_binary', 'edge_detection', 'RGB_thresolding', 'HSV_thresholding', 'Conv', 'Rotation']
+
+algo_type = st.selectbox("Choose an algorithm", options=algorithms)
+if algo_type == algorithms[0]:
+    target = ip_alogs.gray_scale(img)
+if algo_type == algorithms[1]:
+    target = ip_alogs.threshold(img)
+if algo_type == algorithms[2]:
+    target = ip_alogs.edge_detection(img)
+if algo_type == algorithms[3]:
+    target = ip_alogs.color_thresolding_rgb(img)
+if algo_type == algorithms[4]:
+    target = ip_alogs.color_thresholding_hsv(img)
+if algo_type == algorithms[5]:
+    target = ip_alogs.conv2d(img)
+if algo_type == algorithms[6]:
+    target = ip_alogs.rotate_img(img)
+
+col1, col2 = st.columns(2)
+with col1:
+    st.subheader("Original Image")
+    st.image(img)
+with col2:
+    st.subheader(f"Target Image after {algo_type}")
+    st.image(target)
