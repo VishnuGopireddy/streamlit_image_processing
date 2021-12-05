@@ -20,7 +20,7 @@ target = img.copy()
 
 algorithms = ['grayscale', 'grayscale_binary', 'edge_detection', 'RGB_thresolding', 'HSV_thresholding', 'Conv', 'Rotation']
 
-algo_type = st.selectbox("Choose an algorithm", options=algorithms)
+algo_type = st.sidebar.selectbox("Choose an algorithm", options=algorithms)
 if algo_type == algorithms[0]:
     target = ip_alogs.gray_scale(img)
 if algo_type == algorithms[1]:

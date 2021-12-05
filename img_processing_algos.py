@@ -23,12 +23,17 @@ def threshold(img):
     '''
     gray = gray_scale(img)
     threshold = st.sidebar.slider('Thresold values',0,255,127,1)
-    is_invert = st.sidebar.radio('Original/Invert image', options=['original', 'Invert'])
 
-    if is_invert == 'Invert':
-        ret, binary = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY_INV)
+    is_invert = st.sidebar.checkbox('Invert image', value=False, key='Invert',)
+    is_otsu = st.sidebar.checkbox('Otsu Binarization', value=False, key='Otsu',)
+
+    if is_otsu:
+        ret, binary = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     else:
         ret, binary = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY)
+
+    if is_invert:
+        binary = cv2.bitwise_not(binary)
 
     return binary
 
