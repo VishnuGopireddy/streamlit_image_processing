@@ -26,9 +26,9 @@ def threshold(img):
 
     is_invert = st.sidebar.checkbox('Invert image', value=False, key='Invert',)
     is_otsu = st.sidebar.checkbox('Otsu Binarization', value=False, key='Otsu',)
-
+    st.write(is_otsu, is_invert)
     if is_otsu:
-        ret, binary = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        ret, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     else:
         ret, binary = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY)
 
@@ -48,10 +48,10 @@ def edge_detection(image):
     return edged
 
 def color_thresolding_rgb(image):
+    thresh = st.sidebar.slider("Threshold",min_value=0, max_value=255, value=40)
     r_low = st.sidebar.slider('Red Value', min_value=0, max_value=240, value=40)
     g_low = st.sidebar.slider('Green Value', min_value=0, max_value=240, value=158)
     b_low = st.sidebar.slider('Blue Value', min_value=0, max_value=240, value=16)
-    thresh = st.sidebar.slider("Threshold",min_value=0, max_value=255, value=40)
     minBGR = np.array([r_low - thresh, g_low - thresh, b_low - thresh])
     maxBGR = np.array([r_low + thresh, g_low + thresh, b_low + thresh])
     maskBGR = cv2.inRange(image, minBGR, maxBGR)
@@ -110,3 +110,16 @@ def rotate_img(image):
     rotate_matrix = cv2.getRotationMatrix2D(center=center, angle=theta, scale=1)
     # warp the image with rotate_matrix
     return cv2.warpAffine(src=image, M=rotate_matrix, dsize=(width, height))
+
+def morphological(image):
+    size = st.sidebar.slider('Size of kernel with ones', 2, 15, 3)
+    iterator = st.sidebar.slider('Iterator', 1, 15, 1)
+
+    kernel = np.ones((size,size))
+    operation = st.sidebar.radio('Choose an morphological operation', ['Erosion', 'Dilation'])
+    target = image
+    if operation == 'Erosion':
+        target = cv2.erode(image, kernel, iterations=iterator)
+    if operation == 'Dialation':
+        target = cv2.dilate(image, kernel, iterations=iterator)
+    return target

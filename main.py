@@ -18,9 +18,9 @@ else:
 
 target = img.copy()
 
-algorithms = ['grayscale', 'grayscale_binary', 'edge_detection', 'RGB_thresolding', 'HSV_thresholding', 'Conv', 'Rotation']
+algorithms = ['grayscale', 'grayscale_binary', 'edge_detection', 'RGB_thresolding', 'HSV_thresholding', 'Conv', 'Rotation', 'Morphologial']
 
-algo_type = st.sidebar.selectbox("Choose an algorithm", options=algorithms)
+algo_type = st.sidebar.radio("Choose an algorithm", options=algorithms)
 if algo_type == algorithms[0]:
     target = ip_alogs.gray_scale(img)
 if algo_type == algorithms[1]:
@@ -35,11 +35,23 @@ if algo_type == algorithms[5]:
     target = ip_alogs.conv2d(img)
 if algo_type == algorithms[6]:
     target = ip_alogs.rotate_img(img)
+if algo_type == algorithms[7]:
+    target = ip_alogs.morphological(img)
 
 col1, col2 = st.columns(2)
 with col1:
     st.subheader("Original Image")
     st.image(img)
+
+    dimensions = img.shape
+    # height, width, number of channels in image
+    height = img.shape[0]
+    width = img.shape[1]
+    channels = img.shape[2]
+
+    info = f'Properties of Image:\nImage Dimension    :{dimensions} \n Image Height     :{height}\n Image Width      :{width}\nNumber of Channels  :{channels}\n'
+    st.text(info)
+
 with col2:
-    st.subheader(f"Target Image after {algo_type}")
+    st.subheader(f"Target Image")
     st.image(target)
