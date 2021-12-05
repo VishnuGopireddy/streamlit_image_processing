@@ -2,6 +2,8 @@ import numpy as np
 from PIL import Image
 import streamlit as st
 import img_processing_algos as ip_alogs
+import cv2
+import io
 
 
 DEFAULT_IMG = 'cube.png'
@@ -55,3 +57,10 @@ with col1:
 with col2:
     st.subheader(f"Target Image")
     st.image(target)
+    is_success, im_buf_arr = cv2.imencode(".jpg", target)
+    io_buf = io.BytesIO(im_buf_arr)
+    byte_im = io_buf.getvalue()
+    # im = Image.fromarray(target)
+    # b = io.BytesIO()
+    st.download_button('Download target image', data=byte_im, file_name='download.jpg')
+    io_buf.seek(0)
