@@ -123,3 +123,27 @@ def morphological(image):
     if operation == 'Dialation':
         target = cv2.dilate(image, kernel, iterations=iterator)
     return target
+
+def misc(image):
+    st.sidebar.subheader('Object Detection bbox viz')
+    opts = ['YOLO', 'VOC', 'COCO']
+    option = st.radio("Choose the format of annotation for the bounding box", options=opts, index=0)
+
+    text = st.text_area('Enter bounding box in the format of <xc, yc, w, h>', value='0 0 0 0\n0 0 0 0', height=15)
+
+    nums = map(float, text.split('\n'))
+    nums = list(nums)
+    if len(nums) > 0:
+        st.write(list(nums))
+    # cols = st.columns(4)
+    # if option == 'YOLO':
+    #     x = cols[0].number_input('X Center', min_value=0.0, value=0.0, step=0.1)
+    #     y = cols[1].number_input('Y Center', min_value=0.0, value=0.0, step=0.1)
+    #     width = cols[2].number_input('Width', min_value=0.0, value=0.0, step=0.1)
+    #     height = cols[3].number_input('Height', min_value=0.0, value=0.0, step=0.1)
+    # if option == 'VOC':
+    #     xmin = cols[0].number_input('Xmin', min_value=0.0, value=0.0, step=0.1)
+    #     ymin = cols[1].number_input('Ymin', min_value=0.0, value=0.0, step=0.1)
+    #     xmax = cols[2].number_input('Xmax', min_value=0.0, value=0.0, step=0.1)
+    #     ymax = cols[3].number_input('Ymax', min_value=0.0, value=0.0, step=0.1)
+
