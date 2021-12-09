@@ -1,45 +1,69 @@
-import streamlit as st
-from PIL import Image
-import io
 import numpy as np
+from PIL import Image
+import streamlit as st
+import img_processing_algos as ip_alogs
 import cv2
+import io
 
-uploaded_files = None
-uploaded_files = st.file_uploader("Add IMAGES", type=['.jpg', '.jpeg', '.png'], accept_multiple_files=True)
 
-st.write(f'Total uploaded files are {len(uploaded_files)}')
-if uploaded_files is not None:
-    files = {}
-    for uploaded_file in uploaded_files:
-        img = Image.open(uploaded_file)
-        # st.write(img.height)
-        # print(uploaded_file)
-        # print(type(uploaded_file))
-        tag = img._getexif()
-        if tag is not None:
-            date = tag[36867]
-            yyyymmdd = date.split(' ')[0]
-            mmdd = yyyymmdd.split(':')[1:][::-1]
-            ddmm = '_'.join(mmdd)
-            if ddmm not in files.keys():
-                files.update({ddmm : 0})
-            else:
-                files[ddmm] = files[ddmm] + 1
-            #save file with {ddmm}_count
-            img = np.array(img)
-            is_success, im_buf_arr = cv2.imencode(".jpg", img)
-            io_buf = io.BytesIO(im_buf_arr)
-            byte_im = io_buf.getvalue()
-            # im = Image.fromarray(target)
-            # b = io.BytesIO()
-            st.write(f'Date from file: {ddmm}')
-            st.download_button(f'Download f{uploaded_file.name}', data=byte_im, file_name=f'{ddmm}_{files[ddmm]}.jpg')
-            io_buf.seek(0)
-        else:
-            st.write(f'meta data for {uploaded_file.name} is not available')
+DEFAULT_IMG = 'cube.png'
+# img = Image.open(DEFAULT_IMG)
+img_file = st.file_uploader("Add a file", type=['.jpg', '.jpeg', '.png'])
+if img_file != None:
+    img = Image.open(img_file)
+    img = img.convert('RGB')
+    img = np.array(img)
+else:
+    img = Image.open(DEFAULT_IMG)
+    img = img.convert('RGB')
+    img = np.array(img)
 
-        st.write('-----------------------------------------------------------')
+target = img.copy()
 
-    st.write("Count of available files")
-    st.write(files)
+algorithms = ['grayscale', 'grayscale_binary', 'edge_detection', 'RGB_thresolding', 'HSV_thresholding', 'Conv', 'Rotation', 'Morphologial',
+              "Miscellaneous"]
 
+algo_type = st.sidebar.radio("Choose an algorithm", options=algorithms)
+if algo_type == algorithms[0]:
+    target = ip_alogs.gray_scale(img)
+if algo_type == algorithms[1]:
+    target = ip_alogs.threshold(img)
+if algo_type == algorithms[2]:
+    target = ip_alogs.edge_detection(img)
+if algo_type == algorithms[3]:
+    target = ip_alogs.color_thresolding_rgb(img)
+if algo_type == algorithms[4]:
+    target = ip_alogs.color_thresholding_hsv(img)
+if algo_type == algorithms[5]:
+    target = ip_alogs.conv2d(img)
+if algo_type == algorithms[6]:
+    target = ip_alogs.rotate_img(img)
+if algo_type == algorithms[7]:
+    target = ip_alogs.morphological(img)
+if algo_type == algorithms[-1]:
+    target = ip_alogs.misc(img)
+
+col1, col2 = st.columns(2)
+with col1:
+    st.subheader("Original Image")
+    st.image(img)
+
+    dimensions = img.shape
+    # height, width, number of channels in image
+    height = img.shape[0]
+    width = img.shape[1]
+    channels = img.shape[2]
+
+    info = f'Properties of Image:\nImage Dimension    :{dimensions} \n Image Height     :{height}\n Image Width      :{width}\nNumber of Channels  :{channels}\n'
+    st.text(info)
+
+with col2:
+    st.subheader(f"Target Image")
+    st.image(target)
+    is_success, im_buf_arr = cv2.imencode(".jpg", target)
+    io_buf = io.BytesIO(im_buf_arr)
+    byte_im = io_buf.getvalue()
+    # im = Image.fromarray(target)
+    # b = io.BytesIO()
+    st.download_button('Download target image', data=byte_im, file_name='download.jpg')
+    io_buf.seek(0)
