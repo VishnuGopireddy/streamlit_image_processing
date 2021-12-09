@@ -33,7 +33,7 @@ if uploaded_files is not None:
             # im = Image.fromarray(target)
             # b = io.BytesIO()
             st.write(f'Date from file: {ddmm}')
-            st.download_button(f'Download f{uploaded_file.name}', data=byte_im, file_name=f'{ddmm}_{files[ddmm]}')
+            st.download_button(f'Download f{uploaded_file.name}', data=byte_im, file_name=f'{ddmm}_{files[ddmm]}.jpg')
             io_buf.seek(0)
         else:
             st.write(f'meta data for {uploaded_file.name} is not available')
